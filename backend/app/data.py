@@ -4,7 +4,7 @@ from functools import lru_cache
 
 import pandas as pd
 
-from app import analysis, config, elexon
+from . import analysis, config, elexon
 
 
 @dataclass(frozen=True)

@@ -5,8 +5,8 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 
-from app import analysis, config
-from app.data import Dataset
+from . import analysis, config
+from .data import Dataset
 
 Mode = Literal["day_ahead", "horizon"]
 

@@ -1,4 +1,4 @@
-# One image for local Docker and Heroku: build the React app, then serve it from FastAPI.
+# Local production image: build the React app, then serve it from FastAPI.
 
 # --- 1. Build the frontend ------------------------------------------------------------------
 FROM node:24-alpine AS frontend
@@ -9,7 +9,7 @@ COPY frontend/ ./
 RUN npm run build
 
 # --- 2. Python API + static frontend ----------------------------------------------------------
-FROM python:3.11-slim
+FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 WORKDIR /app
@@ -24,6 +24,6 @@ COPY --from=frontend /frontend/dist ./static
 RUN useradd --create-home appuser
 USER appuser
 
-# Heroku injects $PORT; locally it defaults to 8000.
+# Listens on $PORT if set (most container hosts set it), else 8000.
 EXPOSE 8000
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

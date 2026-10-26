@@ -2,10 +2,9 @@
 from datetime import date
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.staticfiles import StaticFiles
 
-from app import config, service
-from app.data import load_dataset
+from . import config, service
+from .data import load_dataset
 
 app = FastAPI(title="Wind Forecast Monitor", version="1.0.0")
 
@@ -79,5 +78,7 @@ def accuracy_by_horizon(
     return service.accuracy_by_horizon(load_dataset(), start, end, bucket_h)
 
 
+# The built React app (absent in dev/tests, where Vite serves it). API routes always take priority;
+# on Vercel these files are promoted to the CDN at build time.
 if config.STATIC_DIR.is_dir():
-    app.mount("/", StaticFiles(directory=config.STATIC_DIR, html=True), name="frontend")
+    app.frontend("/", directory=config.STATIC_DIR)

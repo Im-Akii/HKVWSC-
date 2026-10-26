@@ -1,0 +1,15 @@
+# Vercel deployment config. Vercel runs the FastAPI app as one Python function.
+# Runtime dependencies mirror backend/requirements.txt (used by Docker and local dev).
+[project]
+name = "wind-forecast-monitor"
+version = "1.0.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.162.0",
+    "uvicorn[standard]==0.54.0",
+    "pandas==3.1.0",
+    "httpx==0.28.1",
+]
+
+[tool.vercel]
+entrypoint = "backend.app.main:app"

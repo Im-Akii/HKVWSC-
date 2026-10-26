@@ -34,8 +34,9 @@ Audience: the utility's day-ahead buying team. Goal: they leave wanting to use i
 
 1. **Architecture (1 min).** Diagram in words: Elexon BMRS → `elexon.py` (stream fetch, weekly
    chunks) → CSV snapshot → `data.py` (load once, cached) → `analysis.py` (pure functions) →
-   `service.py` (use cases) → FastAPI `/api/*` → React (Vite + Recharts). One Docker image serves
-   both; same image locally (`docker compose up`) and on Heroku (`heroku.yml`).
+   `service.py` (use cases) → FastAPI `/api/*` → React (Vite + Recharts). FastAPI serves
+   API and UI together: Docker locally (`docker compose up`); on Vercel the same app becomes one Python function
+   (`pyproject.toml` entrypoint, `vercel.json` builds the frontend).
 2. **The core logic (1.5 min).** Open `analysis.py`:
    - `true_forecasts`: drop the ~20% of rows that re-publish past hours (they would flatter accuracy).
    - `select_forecasts`: `merge_asof` by target time, backward on publish time = "latest run known

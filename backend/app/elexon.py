@@ -5,7 +5,7 @@ Run `python -m app.elexon` to refresh the CSV snapshot in backend/data/.
 import httpx
 import pandas as pd
 
-from app import config
+from . import config
 
 CHUNK = pd.Timedelta(days=7)  # keep each request small; the stream endpoints return everything in range
 

@@ -8,9 +8,9 @@ A v1 web app for a UK utility's day-ahead power buying desk. It answers two ques
 2. **How wrong is that forecast, and in which direction?** MAE, RMSE, bias, error percentiles
    ("planning buffers"), and how the error changes with forecast horizon, time of day and wind level.
 
-**Live app:** _TODO: add the Heroku URL after deployment_
+**Live app:** _TODO: add the Vercel URL after deployment_
 
-Stack: React (Vite, Recharts) · Python (FastAPI, pandas) · Docker · Heroku (container stack).
+Stack: React (Vite, Recharts) · Python (FastAPI, pandas) · Docker (local) · Vercel (hosting).
 
 ---
 
@@ -166,7 +166,9 @@ balancing-mechanism data (e.g. BOALF) to confirm.
 ├── docs/VIDEO_OUTLINE.md  # outline for the walkthrough video
 ├── Dockerfile             # multi-stage: build React, then Python image serving API + static app
 ├── docker-compose.yml     # local run: `docker compose up`
-├── heroku.yml             # Heroku container-stack build
+├── pyproject.toml         # Vercel: Python deps + entrypoint (backend.app.main:app)
+├── vercel.json            # Vercel: builds the React app into backend/static, function bundle excludes
+├── .python-version        # Python 3.12 (Vercel runtime, Docker, CI)
 └── .github/workflows/ci.yml   # tests + frontend build + Docker build
 ```
 
@@ -185,16 +187,27 @@ Interactive docs: `/docs`.
 
 ---
 
-## Deployment (Heroku, container stack)
+## Deployment (Vercel)
 
-The same Docker image runs on Heroku; `heroku.yml` tells Heroku to build the `Dockerfile`, and the
-container listens on `$PORT`.
+Vercel runs the same FastAPI app with its FastAPI preset:
+
+- `pyproject.toml` points Vercel at the app (`[tool.vercel] entrypoint = "backend.app.main:app"`)
+  and lists the runtime dependencies (the same pins as `backend/requirements.txt`).
+- `vercel.json` sets the build command: build the React app and copy it to `backend/static`, which
+  FastAPI serves via `app.frontend("/")`. API routes (`/api/*`) always take priority.
+- The whole FastAPI app becomes one Vercel Function (Python 3.12). Its bundle includes the app code
+  and the CSV snapshot; `frontend/`, tests and docs are excluded.
+
+To deploy: import the GitHub repo in the Vercel dashboard (no settings to change; `vercel.json`
+carries them), or from the CLI:
 
 ```bash
-heroku create <app-name>
-heroku stack:set container -a <app-name>
-git push heroku main
+npx vercel          # preview deployment
+npx vercel --prod   # production
 ```
+
+Docker is used for local runs (`docker compose up`); Vercel does not run Docker images, so it builds
+from the same source instead.
 
 ## Design choices
 
@@ -203,8 +216,8 @@ git push heroku main
 - **Snapshot instead of a database.** The pilot data is ~1.3 MB of CSV; loading it into pandas at
   startup is simpler and faster than running a database, and makes the app reproducible offline.
   A live version would add a scheduled fetch into Postgres/Parquet.
-- **One container.** FastAPI serves the built React app, so local Docker and Heroku run the same
-  image with no CORS setup.
+- **One app.** FastAPI serves the built React app, so local Docker and Vercel run the same app on
+  one origin with no CORS setup.
 - **Plain React state.** Two views and a shared cut-off don't need Redux; a small `useApi` hook
   handles fetching, loading, errors and request cancellation.
 
