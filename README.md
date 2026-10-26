@@ -8,7 +8,7 @@ A v1 web app for a UK utility's day-ahead power buying desk. It answers two ques
 2. **How wrong is that forecast, and in which direction?** MAE, RMSE, bias, error percentiles
    ("planning buffers"), and how the error changes with forecast horizon, time of day and wind level.
 
-**Live app:** _TODO: add the Vercel URL after deployment_
+**Live app:** https://my-sable-three.vercel.app/ (API docs: https://my-sable-three.vercel.app/docs)
 
 Stack: React (Vite, Recharts) · Python (FastAPI, pandas) · Docker (local) · Vercel (hosting).
 
