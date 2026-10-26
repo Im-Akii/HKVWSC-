@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Node
+node_modules/
+frontend/dist/
+
+# Built frontend copied for local production runs
+backend/static/
+
+# Local tooling / secrets
+.claude/
+.env
+*.log
